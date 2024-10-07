@@ -44,57 +44,66 @@ public class SpellCheck {
     }
 
     public void setTrie(String[] dictionary, TST_Node root) {
-        TST_Node start = root;
+        TST_Node current = root;
         for (String s : dictionary) {
-            root = start;
+            current = root;
             boolean b = false;
             for (int i = 0; i < s.length(); i++) {
                 char c = s.charAt(i);
                 b = false;
                 while(!b){
-                    if(root == null){
+                    if(current.getC() == 0){
                         if(i == s.length()-1){
-                            root = new TST_Node(true,c);
+                            current.setC(c);
+                            current.setTerminate(true);
                         }
                         else{
-                            root = new TST_Node(c);
-                            root = root.getNodes()[equal];
+                            current.setC(c);
                         }
-                        b = true;
                         break;
                     }
-                    if(c == root.getC()){
-                        if(i == s.length()-1){
-                            if(root.getNodes()[equal] == null){
-                                root.getNodes()[equal] = new TST_Node(c);
+                    else{
+                        if(c == current.getC()){
+                            if(current.getNodes()[equal] == null){
+                                if(i == s.length()-1){
+                                    current.getNodes()[equal] = new TST_Node(c);
+                                    current.getNodes()[equal].setTerminate(true);
+                                }
+                                else{
+                                    current.getNodes()[equal] = new TST_Node();
+                                }
+                                b= true;
                             }
-                            root.getNodes()[equal].setTerminate(true);
+                            current = current.getNodes()[equal];
                         }
-                        root = root.getNodes()[equal];
-                        b = true;
-                    }
-                    else if(c > root.getC()){
-                        if(i == s.length()-1){
-                            if(root.getNodes()[great] == null){
-                                root.getNodes()[great] = new TST_Node(c);
+                        else if(c > current.getC()){
+                            if(current.getNodes()[great] == null){
+                                if(i == s.length()-1){
+                                    current.getNodes()[great] = new TST_Node(c);
+                                    current.getNodes()[great].setTerminate(true);
+                                }
+                                else{
+                                    current.getNodes()[great] = new TST_Node();
+                                }
+                                b= true;
                             }
-                            root.getNodes()[great].setTerminate(true);
-                            b = true;
+                            current = current.getNodes()[great];
                         }
-                        root = root.getNodes()[great];
-                    }
-                    else if(c < root.getC()){
-                        if(i == s.length()-1){
-                            if(root.getNodes()[less] == null){
-                                root.getNodes()[less] = new TST_Node(c);
+                        else if(c < current.getC()){
+                            if(current.getNodes()[less] == null){
+                                if(i == s.length()-1){
+                                    current.getNodes()[less] = new TST_Node(c);
+                                    current.getNodes()[less].setTerminate(true);
+                                }
+                                else{
+                                    current.getNodes()[less] = new TST_Node();
+                                }
+                                b= true;
                             }
-                            root.getNodes()[less].setTerminate(true);
-                            b = true;
+                            current = current.getNodes()[less];
                         }
-                        root = root.getNodes()[less];
                     }
                 }
-
             }
 
         }
@@ -128,50 +137,49 @@ public class SpellCheck {
     }
 
     public void addTrie(TST_Node root, String s){
+        TST_Node current = root;
         boolean b = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             b = false;
             while(!b){
-                if(root == null){
-                    if(i == s.length()-1){
-                        root = new TST_Node(true,c);
-                    }
-                    else{
-                        root = new TST_Node(c);
-                    }
-                    b = true;
-                    break;
-                }
-                if(c == root.getC()){
-                    if(i == s.length()-1){
-                        if(root.getNodes()[equal] == null){
-                            root.getNodes()[equal] = new TST_Node(c);
-                        }
-                        root.getNodes()[equal].setTerminate(true);
-                    }
-                    root = root.getNodes()[equal];
-                    b = true;
-                }
-                else if(c > root.getC()){
-                    if(i == s.length()-1){
-                        if(root.getNodes()[great] == null){
-                            root.getNodes()[great] = new TST_Node(c);
-                        }
-                        root.getNodes()[great].setTerminate(true);
+                if(c == current.getC()){
+                    if(current.getNodes()[equal] == null){
                         b = true;
-                    }
-                    root = root.getNodes()[great];
-                }
-                else if(c < root.getC()){
-                    if(i == s.length()-1){
-                        if(root.getNodes()[less] == null){
-                            root.getNodes()[less] = new TST_Node(c);
+                        if(i == s.length()-1){
+
+                            current.getNodes()[equal] = new TST_Node(true, c);
                         }
-                        root.getNodes()[less].setTerminate(true);
-                        b = true;
+                        else{
+                            current.getNodes()[equal] = new TST_Node(c);
+                        }
                     }
-                    root = root.getNodes()[less];
+                    current = current.getNodes()[equal];
+                }
+                else if(c > current.getC()){
+                    if(current.getNodes()[great] == null){
+                        b = true;
+                        if(i == s.length()-1){
+                            current.getNodes()[great] = new TST_Node(true,c);
+
+                        }
+                        else{
+                            current.getNodes()[great] = new TST_Node(c);
+                        }
+                    }
+                    current = current.getNodes()[great];
+                }
+                else if(c < current.getC()){
+                    if(current.getNodes()[less] == null){
+                        b = true;
+                        if(i == s.length()-1){
+                            current.getNodes()[less] = new TST_Node(true,c);
+                        }
+                        else{
+                            current.getNodes()[less] = new TST_Node(c);
+                        }
+                    }
+                    current = current.getNodes()[less];
                 }
             }
         }
