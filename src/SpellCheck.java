@@ -58,6 +58,7 @@ public class SpellCheck {
                         }
                         else{
                             root = new TST_Node(c);
+                            root = root.getNodes()[equal];
                         }
                         b = true;
                         break;
@@ -93,6 +94,7 @@ public class SpellCheck {
                         root = root.getNodes()[less];
                     }
                 }
+
             }
 
         }
