@@ -4,11 +4,11 @@ public class Node {
     boolean terminate;
 
     public Node(){
-        nodes = new Node[27];
+        nodes = new Node[256];
         terminate = false;
     }
     public Node(boolean t){
-        nodes = new Node[27];
+        nodes = new Node[256];
         terminate = t;
     }
 

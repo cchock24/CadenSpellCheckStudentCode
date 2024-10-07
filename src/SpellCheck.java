@@ -13,6 +13,10 @@ import java.util.Set;
 
 public class SpellCheck {
 
+    // The Array Spots for TST_Node
+    int great = 2;
+    int equal = 1;
+    int less = 0;
 
     /**
      * checkWords finds all words in text that are not present in dictionary
@@ -23,14 +27,14 @@ public class SpellCheck {
      */
     public String[] checkWords(String[] text, String[] dictionary) {
         ArrayList<String> notWords = new ArrayList<String>();
-        Node rootDic = new Node();
+        TST_Node rootDic = new TST_Node('a');
         setTrie(dictionary, rootDic);
-        Node rootNot = new Node();
+        TST_Node rootNot = new TST_Node('a');
         for(String s: text){
             // Checks if in notWord
-            if(checkTrie(s, rootNot)){
+            if(!checkTrie(s, rootNot)){
                 // Checks if in Dictionary
-                if(checkTrie(s, rootDic)){
+                if(!checkTrie(s, rootDic)){
                     notWords.add(s);
                     addTrie(rootNot, s);
                 }
@@ -39,74 +43,135 @@ public class SpellCheck {
         return notWords.toArray(new String[0]);
     }
 
-    public void setTrie(String[] dictionary, Node root) {
-        Node start = root;
+    public void setTrie(String[] dictionary, TST_Node root) {
+        TST_Node start = root;
         for (String s : dictionary) {
             root = start;
+            boolean b = false;
             for (int i = 0; i < s.length(); i++) {
-                // Get Character's Node
                 char c = s.charAt(i);
-                int character = 0;
-                if (!Character.isLetter(c)) {
-                    character = 26;
-                }
-                else {
-                    c = Character.toLowerCase(s.charAt(i));
-                    character = c - 'a';
-                }
-                if(i == s.length()-1){
-                    root.getNodes()[character] = new Node(true);
-                }
-                else{
-                    if(root.getNodes()[character] == null){
-                        root.getNodes()[character] = new Node();
+                b = false;
+                while(!b){
+                    if(root == null){
+                        if(i == s.length()-1){
+                            root = new TST_Node(true,c);
+                        }
+                        else{
+                            root = new TST_Node(c);
+                        }
+                        b = true;
+                        break;
+                    }
+                    if(c == root.getC()){
+                        if(i == s.length()-1){
+                            if(root.getNodes()[equal] == null){
+                                root.getNodes()[equal] = new TST_Node(c);
+                            }
+                            root.getNodes()[equal].setTerminate(true);
+                        }
+                        root = root.getNodes()[equal];
+                        b = true;
+                    }
+                    else if(c > root.getC()){
+                        if(i == s.length()-1){
+                            if(root.getNodes()[great] == null){
+                                root.getNodes()[great] = new TST_Node(c);
+                            }
+                            root.getNodes()[great].setTerminate(true);
+                            b = true;
+                        }
+                        root = root.getNodes()[great];
+                    }
+                    else if(c < root.getC()){
+                        if(i == s.length()-1){
+                            if(root.getNodes()[less] == null){
+                                root.getNodes()[less] = new TST_Node(c);
+                            }
+                            root.getNodes()[less].setTerminate(true);
+                            b = true;
+                        }
+                        root = root.getNodes()[less];
                     }
                 }
-                root = root.getNodes()[character];
             }
+
         }
     }
 
-    public boolean checkTrie(String s, Node root){
-        char c;
-        int character;
-        for(int i = 0; i < s.length(); i++){
-            if(s.charAt(i) != '"') {
-                c = Character.toLowerCase(s.charAt(0));
-                character = c - 'a';
+    public boolean checkTrie(String s, TST_Node root){
+        boolean b = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            b = false;
+            while(!b){
+                if(root == null){
+                   return false;
+                }
+                if(c == root.getC()){
+                    if(i == s.length()-1 && root.isTerminate()){
+                        return true;
+                    }
+                    root = root.getNodes()[equal];
+                    b = true;
+                }
+                else if(c > root.getC()){
+                    root = root.getNodes()[great];
+                }
+                else{
+                    root = root.getNodes()[less];
+                }
             }
-            else{
-                character = 26;
-            }
-            if(root.getNodes()[character] == null){
-                return false;
-            }
-            if(root.getNodes()[character].isTerminate()){
-                return true;
-            }
-            root = root.getNodes()[character];
         }
         return false;
     }
 
-    public void addTrie(Node root, String s){
+    public void addTrie(TST_Node root, String s){
+        boolean b = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            int character = 0;
-            if (!Character.isLetter(c)) {
-                character = 26;
+            b = false;
+            while(!b){
+                if(root == null){
+                    if(i == s.length()-1){
+                        root = new TST_Node(true,c);
+                    }
+                    else{
+                        root = new TST_Node(c);
+                    }
+                    b = true;
+                    break;
+                }
+                if(c == root.getC()){
+                    if(i == s.length()-1){
+                        if(root.getNodes()[equal] == null){
+                            root.getNodes()[equal] = new TST_Node(c);
+                        }
+                        root.getNodes()[equal].setTerminate(true);
+                    }
+                    root = root.getNodes()[equal];
+                    b = true;
+                }
+                else if(c > root.getC()){
+                    if(i == s.length()-1){
+                        if(root.getNodes()[great] == null){
+                            root.getNodes()[great] = new TST_Node(c);
+                        }
+                        root.getNodes()[great].setTerminate(true);
+                        b = true;
+                    }
+                    root = root.getNodes()[great];
+                }
+                else if(c < root.getC()){
+                    if(i == s.length()-1){
+                        if(root.getNodes()[less] == null){
+                            root.getNodes()[less] = new TST_Node(c);
+                        }
+                        root.getNodes()[less].setTerminate(true);
+                        b = true;
+                    }
+                    root = root.getNodes()[less];
+                }
             }
-            else {
-                c = Character.toLowerCase(s.charAt(i));
-                character = c - 'a';
-            }
-            if(i == s.length()-1){
-                root.getNodes()[character] = new Node(true);
-            }
-            else{
-                root.getNodes()[character] = new Node();
-            }
-            root = root.getNodes()[character];
         }
     }
 }
@@ -115,36 +180,3 @@ public class SpellCheck {
 
 
 
-/* Using a Set
-Set<String> notWords = new HashSet<String>();
-        ArrayList<String> sortNotWords = new ArrayList<String>();
-
-        for(int i = 0; i < text.length; i++){
-            // Binary Search to Check if Word is in Dictionary
-            boolean isWord = searchDic(text[i], 0, dictionary.length-1, dictionary);
-            if(!isWord){
-                if(notWords.add(text[i])){
-                    sortNotWords.add(text[i]);
-                }
-            }
-        }
-        return sortNotWords.toArray(new String[0]);
-
-        // Uses Binary Search to Find a Word in a Dictionary taken from Spelling Bee
-    public boolean searchDic(String s, int start, int end, String[] dictionary){
-        int divide = start + (end-start)/2;
-        String check = dictionary[divide];
-        if(s.equals(check)){
-            return true;
-        }
-        if(start >= end){
-            return false;
-        }
-        if(s.compareTo(check) < 0){
-            return searchDic(s,start, divide-1, dictionary);
-        }
-        else{
-            return searchDic(s,divide +1,end, dictionary);
-        }
-    }
- */
